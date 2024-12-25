@@ -6,28 +6,34 @@ import com.example.task_list_management.repositories.TaskRepository;
 import com.example.task_list_management.servicies.TaskService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-@SpringBootTest
-class TaskListManagementApplicationTests {
+/**
+ * Юнит-тесты для методов TaskService, связанных с обновлением статуса задачи.
+ */
+@ExtendWith(MockitoExtension.class)
+public class TaskServiceTest {
 
+    // Внедряет моки зависимостей в экземпляр TaskService.
     @InjectMocks
     private TaskService taskService;
 
+    // Мок для TaskRepository, используется для имитации операций с базой данных.
     @Mock
     private TaskRepository taskRepository;
 
     /**
-     * Тест для успешного обновления статуса задачи.
+     * Тестовый случай для успешного обновления статуса существующей задачи.
      *
      * Шаги:
      * 1. Arrange: Мокаем репозиторий задач, чтобы он возвращал задачу при поиске по ID
-     *    и сохранял обновленную задачу в репозиторий.
+     *    и сохранял обновленную задачу обратно в репозиторий.
      * 2. Act: Вызываем метод updateTaskStatus с действительным ID задачи и новым статусом.
      * 3. Assert:
      *    - Результат должен быть Optional, содержащий обновленную задачу.
@@ -35,11 +41,11 @@ class TaskListManagementApplicationTests {
      *    - Методы findById и save репозитория должны быть вызваны ровно один раз.
      */
     @Test
-    public void updateTaskStatusTest_Success() {
+    public void testUpdateTaskStatus_Success() {
         // Arrange
         Long taskId = 1L; // ID задачи для обновления
         TaskStatus newStatus = TaskStatus.COMPLETED; // Новый статус для задачи
-        Task task = new Task();
+        Task task = new Task(); // Создаем мок задачи
         task.setId(taskId);
         task.setStatus(TaskStatus.IN_PROGRESS); // Устанавливаем начальный статус
 
@@ -58,7 +64,7 @@ class TaskListManagementApplicationTests {
     }
 
     /**
-     * Тест для обработки ситуации, когда задача не найдена в репозитории.
+     * Тестовый случай для обработки ситуации, когда задача не найдена в репозитории.
      *
      * Шаги:
      * 1. Arrange: Мокаем репозиторий задач, чтобы он возвращал пустой Optional при поиске по ID.
@@ -69,7 +75,7 @@ class TaskListManagementApplicationTests {
      *    - Метод save репозитория не должен быть вызван.
      */
     @Test
-    public void updateTaskStatusTest_TaskNotFound() {
+    public void testUpdateTaskStatus_TaskNotFound() {
         // Arrange
         Long taskId = 1L; // ID несуществующей задачи
         TaskStatus newStatus = TaskStatus.COMPLETED; // Новый статус для задачи
